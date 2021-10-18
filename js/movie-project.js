@@ -56,8 +56,9 @@ $(document).ready(function () {
                     }
                 };
                 return fetch(`${movieAPIURL}/${id}`, options)
-                    .then((response)=>console.log("Deleted movie with id: " + id, response))
+                    .then((response)=>console.log("Deleted movie with id: " + id))
             }
+            //Adding our movies to our HTML page
 function renderMovies() {
     movieData.forEach((movie) => {
         console.log(movie.title)
@@ -68,23 +69,18 @@ function renderMovies() {
                 <div>Actors: ${movie.actors} </div>
                 <div>Year: ${movie.year}</div>
                 <button class="deleteButtons" id="${index}">Delete Movie</button>
+                <button class="editButton">Edit Movie Details</button>
 `)
+        $(`#${index}`).on("click", function(){
+            console.log("I clicked a button")
+            deleteMovie(`${index}`)
+        })
 
     })
 }
 renderMovies();
         })
-    $("#testId").on("click", function(){
-        console.log("I clicked a button")
-        let options = {
-            method: "DELETE",
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        };
-        return fetch(`${movieAPIURL}/${id}`, options)
-            .then((response)=>console.log("Deleted movie with id: " + id, response))
-    })
+
 // }
 // getMovies();
 
