@@ -4,6 +4,7 @@ $(document).ready(function () {
     alert("Loading...")
     let submitMovie = document.querySelector("#submitMovie") //To get button to work
 
+
 // function getMovies(){
     fetch(movieAPIURL)
         .then((response) => {
@@ -15,6 +16,7 @@ $(document).ready(function () {
             //
             // }
             //    SEARCH BUTTON
+
             submitMovie.addEventListener('click', function (e) {
                 e.preventDefault();
                 let newMovieTitle = $('.newMovieTitle').val();
@@ -45,20 +47,44 @@ $(document).ready(function () {
                     .then((response)=>response.json())
 
             }
+
+            function deleteMovie(id){
+                let options = {
+                    method: "DELETE",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                return fetch(`${movieAPIURL}/${id}`, options)
+                    .then((response)=>console.log("Deleted movie with id: " + id, response))
+            }
 function renderMovies() {
     movieData.forEach((movie) => {
         console.log(movie.title)
+        console.log(movieData.indexOf(movie))
+        let index = movieData.indexOf(movie)+2;
         $('#movies').append(`<h3>Movie Title: ${movie.title}</h3>
                 <div>Rating: ${movie.rating} stars</div>
                 <div>Actors: ${movie.actors} </div>
                 <div>Year: ${movie.year}</div>
-                
+                <button class="deleteButtons" id="${index}">Delete Movie</button>
 `)
 
     })
 }
 renderMovies();
         })
+    $("#testId").on("click", function(){
+        console.log("I clicked a button")
+        let options = {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+        return fetch(`${movieAPIURL}/${id}`, options)
+            .then((response)=>console.log("Deleted movie with id: " + id, response))
+    })
 // }
 // getMovies();
 
