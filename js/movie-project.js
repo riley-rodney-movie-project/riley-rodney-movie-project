@@ -29,16 +29,29 @@ function deleteMovie(id) {
 }
 
 
-function editMovie(id) {
+function editMovie(id, title, rating, plot, year, genre, actors) {
     let options = {
         method: "PATCH",
         headers: {
+            Accept: "application/json",
             'Content-Type': 'application/json',
-        }
+        },
         // body: JSON.stringify(movie)
+        body: JSON.stringify({
+            title: title,
+            rating:  rating,
+            plot: plot,
+            year: year,
+            genre: genre,
+            actors: actors
+        })
+
     };
     return fetch(`${movieAPIURL}/${id}`, options)
-        .then((response) => console.log("Edit movie with id: " + id))
+        .then((response) => response.json())
+        .then((movie) =>{
+            console.log(movie)
+        })
 }
 
 function toggleEditPage() {
@@ -106,7 +119,7 @@ function renderMovies(movieData) {
         })})
         $(`#e${edits}`).on("click", function () {
             console.log("I clicked a button")
-            editMovie(`${index}`)
+            editMovie(`${index}`, movie.title, movie.rating, movie.plot, movie.year, movie.genre, movie.actors)
 
                 .then(function(data){fetch(movieAPIURL)
                         .then((data) => data.json()).then((movies) => {
