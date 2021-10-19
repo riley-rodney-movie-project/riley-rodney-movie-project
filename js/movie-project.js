@@ -5,6 +5,7 @@ $(document).ready(function () {
     let submitMovie = document.querySelector("#submitMovie") //To get button to work
 
 
+
 // function getMovies(){
     fetch(movieAPIURL)
         .then((response) => {
@@ -58,6 +59,21 @@ $(document).ready(function () {
                 return fetch(`${movieAPIURL}/${id}`, options)
                     .then((response)=>console.log("Deleted movie with id: " + id))
             }
+
+
+            function editMovie(id) {
+                let options = {
+                    method: "PUT",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(movie)
+                };
+                return fetch(`${movieAPIURL}/${id}`, options)
+                    .then((response) => console.log("Edit movie with id: " + id))
+            }
+
+
             //Adding our movies to our HTML page
 function renderMovies() {
     movieData.forEach((movie) => {
@@ -68,15 +84,40 @@ function renderMovies() {
                 <div>Rating: ${movie.rating} stars</div>
                 <div>Actors: ${movie.actors} </div>
                 <div>Year: ${movie.year}</div>
+                <form id="movieDetails">
+                
+         
+<!--                Movie Form     -->
+    Movie Title:<br> <input class="newMovieTitle1" type="text" name="title" value="${movie.title}">
+    <br>
+    Movie Rating: <br> <input class="newMovieRating1" type="text" name="rating" value="${movie.rating}">
+    <br>
+    Movie Year: <br> <input class="newMovieYear" type="text" name="year" value="${movie.year}">
+    <br>
+    Movie Genre: <br> <input class="newMovieGenre" type="text" name="genre" value="${movie.genre}">
+    <br>
+    Movie Director: <br> <input class="newMovieDirector" type="text" name="director" value="${movie.director}">
+    <br>
+    Movie Plot: <br> <input class="newMoviePlot" type="text" name="plot" value="${movie.plot}">
+    <br>
+    Movie Actors: <br> <input class="newMovieActors" type="text" name="actors" value="${movie.actors}">
+    <br>
+</form>
+<!--Buttons-->
                 <button class="deleteButtons" id="${index}">Delete Movie</button>
-                <button class="editButton">Edit Movie Details</button>
+                <button  class="editPage">Edit Movie</button>
 `)
+
         $(`#${index}`).on("click", function(){
             console.log("I clicked a button")
             deleteMovie(`${index}`)
         })
 
+
+
+
     })
+
 }
 renderMovies();
         })
@@ -84,6 +125,24 @@ renderMovies();
 // }
 // getMovies();
 
+    function toggleEditPage(){
+        var editPage = document.getElementById("edit")
+        var displaySetting = editPage.style.display;
+        var editButton = document.getElementById("editButton");
+        if(displaySetting == "block"){
+            editPage.style.display = "none";
+            editButton.innerHTML = "Show Edit Page"
+        }else{
+            editPage.style.display = "block";
+            editButton.innerHTML = "Hide Edit Page"
+        }
+    }
+    $(".editButton").click(function(e){
+        e.preventDefault();
+        console.log("I clicked a button")
+        document.getElementById("#movieDetails").style.display="none";
+        toggleEditPage();
+    })
 
 // button.addEventListener('click', function(e){
 //     e.preventDefault();
