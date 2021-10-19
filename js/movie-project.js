@@ -1,85 +1,62 @@
 const movieAPIURL = 'https://prong-lead-fold.glitch.me/movies'
+
 //Change this from alert to animation that goes away when data loads
-$(document).ready(function () {
-    alert("Loading...")
-    let submitMovie = document.querySelector("#submitMovie") //To get button to work
+function createMovie(movieObject) {
+    let options = {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(movieObject)
+    }
+    return fetch(movieAPIURL, options)
+        .then((response) => response.json())
+
+}
 
 
-
-// function getMovies(){
-    fetch(movieAPIURL)
-        .then((response) => {
-            return response.json()
-        })
-        .then((movieData) => {
-            console.log(movieData);
-            // for (let i = 0; i < movieData.length; i++) {
-            //
-            // }
-            //    SEARCH BUTTON
-
-            submitMovie.addEventListener('click', function (e) {
-                e.preventDefault();
-                let newMovieTitle = $('.newMovieTitle').val();
-                let newMovieRating = $('.newMovieRating').val();
-                const movieObject =
-                    {
-                        title: newMovieTitle,
-                        rating: newMovieRating,
-                    }
-
-            // return movieObject;
-
-                console.log(movieObject);
-                movieData.push(movieObject)
-                createMovie(movieObject);
-
-            })
-
-            function createMovie(movieObject){
-                let options = {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(movieObject)
-                }
-                return fetch(movieAPIURL, options)
-                    .then((response)=>response.json())
-
-            }
-
-            function deleteMovie(id){
-                let options = {
-                    method: "DELETE",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                };
-                return fetch(`${movieAPIURL}/${id}`, options)
-                    .then((response)=>console.log("Deleted movie with id: " + id))
-            }
+function deleteMovie(id) {
+    let options = {
+        method: "DELETE",
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    };
+    return fetch(`${movieAPIURL}/${id}`, options)
+        .then((response) => console.log("Deleted movie with id: " + id))
+}
 
 
-            function editMovie(id) {
-                let options = {
-                    method: "PUT",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(movie)
-                };
-                return fetch(`${movieAPIURL}/${id}`, options)
-                    .then((response) => console.log("Edit movie with id: " + id))
-            }
+function editMovie(id) {
+    let options = {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(movie)
+    };
+    return fetch(`${movieAPIURL}/${id}`, options)
+        .then((response) => console.log("Edit movie with id: " + id))
+}
 
+function toggleEditPage() {
+    var editPage = document.getElementById("edit")
+    var displaySetting = editPage.style.display;
+    var editButton = document.getElementById("editButton");
+    if (displaySetting == "block") {
+        editPage.style.display = "none";
+        editButton.innerHTML = "Show Edit Page"
+    } else {
+        editPage.style.display = "block";
+        editButton.innerHTML = "Hide Edit Page"
+    }
+}
 
-            //Adding our movies to our HTML page
-function renderMovies() {
+function renderMovies(movieData) {
     movieData.forEach((movie) => {
         console.log(movie.title)
         console.log(movieData.indexOf(movie))
-        let index = movieData.indexOf(movie)+2;
+        let index = movieData.indexOf(movie) + 2;
         $('#movies').append(`<h3>Movie Title: ${movie.title}</h3>
                 <div>Rating: ${movie.rating} stars</div>
                 <div>Actors: ${movie.actors} </div>
@@ -108,39 +85,71 @@ function renderMovies() {
                 <button  class="editPage">Edit Movie</button>
 `)
 
-        $(`#${index}`).on("click", function(){
+        $(`#${index}`).on("click", function () {
             console.log("I clicked a button")
             deleteMovie(`${index}`)
         })
 
 
-
-
     })
 
 }
-renderMovies();
+
+$(document).ready(function () {
+    alert("Loading...")
+    let submitMovie = document.querySelector("#submitMovie") //To get button to work
+
+    submitMovie.addEventListener('click', function (e) {
+        e.preventDefault();
+        let newMovieTitle = $('.newMovieTitle').val();
+        let newMovieRating = $('.newMovieRating').val();
+        const movieObject =
+            {
+                title: newMovieTitle,
+                rating: newMovieRating,
+            }
+
+        // return movieObject;
+
+        console.log(movieObject);
+        // movieData.push(movieObject)
+        createMovie(movieObject).then((jsonData)=>{
+            console.log(jsonData);
+            fetch(movieAPIURL).then((response)=>response.json())
+                .then((movies)=>{
+                    $("#movies").html("") //clears out movies
+                    renderMovies(movies)
+                })
+        });
+
+    })
+
+
+// function getMovies(){
+    fetch(movieAPIURL)
+        .then((response) => {
+            return response.json()
+        })
+        .then((movieData) => {
+            console.log(movieData);
+            // for (let i = 0; i < movieData.length; i++) {
+            //
+            // }
+            //    SEARCH BUTTON
+
+
+            //Adding our movies to our HTML page
+            renderMovies(movieData);
         })
 
 // }
 // getMovies();
 
-    function toggleEditPage(){
-        var editPage = document.getElementById("edit")
-        var displaySetting = editPage.style.display;
-        var editButton = document.getElementById("editButton");
-        if(displaySetting == "block"){
-            editPage.style.display = "none";
-            editButton.innerHTML = "Show Edit Page"
-        }else{
-            editPage.style.display = "block";
-            editButton.innerHTML = "Hide Edit Page"
-        }
-    }
-    $(".editButton").click(function(e){
+
+    $(".editButton").click(function (e) {
         e.preventDefault();
         console.log("I clicked a button")
-        document.getElementById("#movieDetails").style.display="none";
+        document.getElementById("#movieDetails").style.display = "none";
         toggleEditPage();
     })
 
