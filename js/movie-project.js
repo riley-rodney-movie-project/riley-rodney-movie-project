@@ -51,21 +51,32 @@ function editMovie(id, title, rating, plot, year, genre, actors) {
         .then((response) => response.json())
         .then((movie) =>{
             console.log(movie)
+            $("#movies").html("");
+            fetch(movieAPIURL)
+                .then((response) => {
+                    return response.json()
+                })
+                .then((movieData) => {
+                    console.log(movieData);
+
+                    //Adding our movies to our HTML page
+                    renderMovies(movieData);
+                })
         })
 }
 
-function toggleEditPage() {
-    var editPage = document.getElementById("edit")
-    var displaySetting = editPage.style.display;
-    var editButton = document.getElementById("editButton");
-    if (displaySetting === "block") {
-        editPage.style.display = "none";
-        editButton.innerHTML = "Show Edit Page"
-    } else {
-        editPage.style.display = "block";
-        editButton.innerHTML = "Hide Edit Page"
-    }
-}
+// function toggleEditPage() {
+//     var editPage = document.getElementById("edit")
+//     var displaySetting = editPage.style.display;
+//     var editButton = document.getElementById("editButton");
+//     if (displaySetting === "block") {
+//         editPage.style.display = "none";
+//         editButton.innerHTML = "Show Edit Page"
+//     } else {
+//         editPage.style.display = "block";
+//         editButton.innerHTML = "Hide Edit Page"
+//     }
+// }
 
 function renderMovies(movieData) {
     movieData.forEach((movie) => {
@@ -77,8 +88,9 @@ function renderMovies(movieData) {
                 <div>Rating: ${movie.rating} stars</div>
                 <div>Actors: ${movie.actors} </div>
                 <div>Year: ${movie.year}</div>
-                <form id="movieDetails">
-                                <!--                Movie Form     -->
+                   <!--                Movie Form     -->
+                <form id="movieDetails${index}">
+                             
                     Movie Title:<br> <input class="newMovieTitle1" type="text" name="title" value="${movie.title}">
                     <br>
                     Movie Rating: <br> <input class="newMovieRating1" type="text" name="rating" value="${movie.rating}">
@@ -105,31 +117,8 @@ function renderMovies(movieData) {
         //     renderMovies()
         // })
 
-        $(`#${index}`).on("click", function () {
-            console.log("I clicked a button")
-            deleteMovie(`${index}`)
 
-                    .then(function(data){fetch(movieAPIURL)
-                    .then((data) => data.json()).then((movies) => {
-                    $("#movies").html("")
-                        console.log(movies);
-                        renderMovies(movies)
-                }
-            )
-        })})
-        $(`#e${edits}`).on("click", function () {
-            console.log("I clicked a button")
-            editMovie(`${index}`, movie.title, movie.rating, movie.plot, movie.year, movie.genre, movie.actors)
-
-                .then(function(data){fetch(movieAPIURL)
-                        .then((data) => data.json()).then((movies) => {
-                            $("#movies").html("")
-                            console.log(movies);
-                            renderMovies(movies)
-                        }
-                        )
-
-    })})        })}        //THERE IS A LOT OF SAUCE
+    })}        //THERE IS A LOT OF SAUCE
                         //delMovie > returns promiseObj
                         //.then(cbFn(){fetch(movieURL) < getting fresh movies from db [SHOULD BE WITHOUT THE MOVIE WE DELETED]
                         //.then(response => response.json()) json our resp
@@ -176,8 +165,35 @@ function renderMovies(movieData) {
                 renderMovies(movieData);
             })
 
+        $(document).on("click", ".deleteButtons",  function () {
+            console.log("I clicked a button")
+            deleteMovie($(this).attr("id")) //this button get id attribute
 
+                .then(function(data){fetch(movieAPIURL)
+                    .then((data) => data.json()).then((movies) => {
+                            $("#movies").html("")
+                            console.log(movies);
+                            renderMovies(movies)
+                        }
+                    )
+                })})
+        $(document).on("click", ".editPage", function () {
+            console.log("I clicked a button")
+            let id = $(this).attr("id").slice(1);
+            console.log($(`#movieDetails${id}`).children());
+            let formChildren = $(`#movieDetails${id}`).children();
+            console.log(formChildren);
+            let title = formChildren.eq(1).val();
+            let rating = formChildren.eq(4).val();
+            let year= formChildren.eq(7).val();
+            let genre = formChildren.eq(10).val();
+            let plot = formChildren.eq(16).val();
+            let actors = formChildren.eq(19).val();
+            editMovie(id, title, rating, plot, year, genre, actors)
 
+        })
+        //
+        //slice at 1 which is our e
 
         // $(`#${edits}`).click(function (e) {
         //     e.preventDefault();
@@ -187,3 +203,5 @@ function renderMovies(movieData) {
         // })
 
     })
+
+
